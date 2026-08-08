@@ -213,19 +213,20 @@ elif page == "🔮 Predictions":
     st.markdown("<br>", unsafe_allow_html=True)
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown("<div class='metric-card'><h4>Demand Forecast (Next 6h)</h4>", unsafe_allow_html=True)
+        st.markdown("<div class='metric-card'><h4 style='color:white;'>Demand Forecast (Next 6h)</h4>", unsafe_allow_html=True)
         hours = ["14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"]
+
         demands = [40, 55, 45, 70, 60, 85, 75, 90]
         chart_data = pd.DataFrame({"Hour": hours, "Demand": demands})
         st.bar_chart(chart_data.set_index("Hour"), color="#6366f1")
         st.markdown("</div>", unsafe_allow_html=True)
     with c2:
-        st.markdown("<div class='metric-card'><h4>Model Performance</h4>", unsafe_allow_html=True)
+        st.markdown("<div class='metric-card'><h4 style='color:white;'>Model Performance</h4>", unsafe_allow_html=True)
         models_perf = [("🏗️ LSTM Rent Forecast", "92%", 0.92), ("🌲 XGBoost Sale Classifier", "94%", 0.94), ("⚡ Feature Pipeline", "98%", 0.98)]
         for name, score, pct in models_perf:
             st.markdown(f'<div style="margin-bottom:16px"><div style="display:flex; justify-content:space-between; margin-bottom:6px"><span style="font-weight:600">{name}</span><span style="font-weight:600">{score}</span></div><div style="height:6px; background:rgba(99,102,241,.1); border-radius:3px; overflow:hidden"><div style="height:100%; width:{pct*100}%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px"></div></div></div>', unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
-    st.markdown("<br>")
+    st.write("")
     st.markdown("<div class='metric-card'><h4>Top Predicted Properties</h4>", unsafe_allow_html=True)
     top_props = df.nlargest(5, 'sale_price_aed')[['area', 'property_type', 'bedrooms', 'sqft', 'sale_price_aed', 'days_on_market']]
     for _, row in top_props.iterrows():
