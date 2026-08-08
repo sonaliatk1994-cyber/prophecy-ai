@@ -8,9 +8,21 @@ import tensorflow as tf
 import xgboost as xgb
 from datetime import datetime, timedelta
 import random
-
+from io import BytesIO
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 st.set_page_config(page_title="Prophecy AI", page_icon="🏠", layout="wide")
+# Initialize saved properties
+SAVED_FILE = "saved_properties.pkl"
 
+if "saved_properties" not in st.session_state:
+    try:
+        with open(SAVED_FILE, "rb") as f:
+            st.session_state.saved_properties = pickle.load(f)
+    except (FileNotFoundError, EOFError):
+        st.session_state.saved_properties = []
 def load_css():
     st.markdown("""
     <style>
@@ -29,21 +41,85 @@ load_css()
 @st.cache_resource
 def load_lstm_models():
     models = {}
-    model_dir = "/app/models"
+    model_dir = "models"
     scaler_path = f"{model_dir}/lstm_scalers.pkl"
+
     if os.path.exists(scaler_path):
         with open(scaler_path, "rb") as f:
             scalers = pickle.load(f)
+
         for area in scalers.keys():
             safe = area.replace(" ", "_").lower()
             mpath = f"{model_dir}/lstm_{safe}.keras"
+
             if os.path.exists(mpath):
                 models[area] = tf.keras.models.load_model(mpath)
-    return models
 
+    return models
+def generate_pdf(area, prop_type, beds, baths, sqft, floor,
+                 list_price, fair_price, sale_demand, rent_demand):
+
+    buffer = BytesIO()
+
+    doc = SimpleDocTemplate(buffer)
+
+    styles = getSampleStyleSheet()
+
+    title_style = styles["Heading1"]
+    title_style.alignment = TA_CENTER
+    title_style.textColor = colors.HexColor("#4F46E5")
+
+    story = []
+
+    story.append(Paragraph("Prophecy AI", title_style))
+    story.append(Paragraph("Professional Property Valuation Report", styles["Heading2"]))
+    story.append(Spacer(1, 20))
+
+    data = [
+        ["Location", area],
+        ["Property Type", prop_type],
+        ["Bedrooms", str(beds)],
+        ["Bathrooms", str(baths)],
+        ["Size (sqft)", str(sqft)],
+        ["Floor", str(floor)],
+        ["Current Listing Price", f"AED {list_price:,.0f}"],
+        ["AI Fair Market Price", f"AED {fair_price:,.0f}"],
+        ["Sale Demand", sale_demand],
+        ["Rent Demand", rent_demand],
+    ]
+
+    table = Table(data, colWidths=[180, 250])
+
+    table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#4F46E5")),
+        ("TEXTCOLOR", (0, 0), (-1, -1), colors.black),
+        ("GRID", (0, 0), (-1, -1), 1, colors.grey),
+        ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#EEF2FF")),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+    ]))
+
+    story.append(table)
+    story.append(Spacer(1, 20))
+
+    story.append(
+        Paragraph(
+            "<b>AI Model Insights</b><br/>"
+            "• Fair price generated using XGBoost.<br/>"
+            "• Rent demand estimated using LSTM.<br/>"
+            "• This report is generated automatically by Prophecy AI.",
+            styles["BodyText"],
+        )
+    )
+
+    doc.build(story)
+
+    pdf = buffer.getvalue()
+    buffer.close()
+
+    return pdf
 @st.cache_resource  
 def load_xgb_model():
-    model_dir = "/app/models"
+    model_dir = "models"
     mpath = f"{model_dir}/xgboost_model.json"
     fpath = f"{model_dir}/xgb_features.pkl"
     if os.path.exists(mpath) and os.path.exists(fpath):
@@ -56,7 +132,7 @@ def load_xgb_model():
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv("/app/data/sample_properties.csv")
+    df = pd.read_csv("data/sample_properties.csv")
     df['date'] = pd.to_datetime(df['listing_date'])
     return df
 
@@ -160,6 +236,8 @@ elif page == "🔮 Predictions":
 elif page == "🔍 Property Search":
     st.markdown("<h2>Property Search</h2>", unsafe_allow_html=True)
     st.markdown("<p style='color:#94a3b8'>Find properties with AI-powered demand and price predictions.</p>", unsafe_allow_html=True)
+    search_query = st.text_input("Search Properties", placeholder="Search by area, property name, or location...")
+    search_button = st.button("Search")
     with st.container():
         st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
         c1, c2, c3, c4 = st.columns(4)
@@ -173,6 +251,10 @@ elif page == "🔍 Property Search":
             price_range = st.selectbox("Price Range", ["Any", "< 1M", "1M - 3M", "3M - 5M", "> 5M"])
         st.markdown("</div>", unsafe_allow_html=True)
     filtered = df.copy()
+    if search_button and search_query.strip():
+        query = search_query.strip().lower()
+        mask = filtered.astype(str).apply(lambda col: col.str.lower().str.contains(query, na=False)).any(axis=1)
+        filtered = filtered[mask]
     if search_area != "All":
         filtered = filtered[filtered['area'] == search_area]
     if search_type != "All":
@@ -200,7 +282,16 @@ elif page == "🔍 Property Search":
             emojis = {"Apartment": "🏢", "Villa": "🏡", "Townhouse": "🏘️", "Penthouse": "🌆"}
             emoji = emojis.get(row['property_type'], "🏠")
             st.markdown(f'<div class="metric-card" style="cursor:pointer; margin-bottom:16px"><div style="height:140px; background:linear-gradient(135deg,#1e3a5f,#0f172a); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:48px; margin-bottom:12px">{emoji}</div><h4>{row["area"]} {row["property_type"]}</h4><p style="color:#94a3b8; font-size:13px">{row["area"]} • {row["bedrooms"]}BR • {row["sqft"]} sqft</p><div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px"><span style="font-size:20px; font-weight:700">AED {row["sale_price_aed"]/1e6:.2f}M</span>{demand_badge(demand)}</div><div style="margin-top:8px; font-size:12px; color:#94a3b8">Fair: <b style="color:#10b981">AED {fair/1e6:.2f}M</b> ✅</div></div>', unsafe_allow_html=True)
-
+            if st.button("⭐ Save Property", key=f"save_property_{row.name}"):
+                st.session_state.saved_properties.append({
+                    "Location": row["area"],
+                    "Property Type": row["property_type"],
+                    "Bedrooms": row["bedrooms"],
+                    "Bathrooms": row.get("bathrooms", ""),
+                    "Size": row["sqft"],
+                    "Price": row["sale_price_aed"]
+                })
+                st.success("Property saved!")
 elif page == "🧠 AI Prediction":
     st.markdown("<h2>🧠 AI Price Prediction</h2>", unsafe_allow_html=True)
     st.markdown("<p style='color:#94a3b8'>Enter property details to get real-time demand and price forecasts.</p>", unsafe_allow_html=True)
@@ -225,54 +316,97 @@ elif page == "🧠 AI Prediction":
         predict_btn = st.button("🚀 Run Prediction", use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
     with c2:
-        if predict_btn:
+        if predict_btn or st.session_state.get("prediction_run", False):
+            st.session_state.prediction_run = True
             st.markdown("<div class='prediction-box'>", unsafe_allow_html=True)
             st.markdown("<div style='display:flex; align-items:center; gap:10px; margin-bottom:16px'><span class='live-dot'></span><span style='font-weight:600'>Prediction Generated</span><span style='color:#94a3b8; font-size:12px; margin-left:auto'>1.2s latency</span></div>", unsafe_allow_html=True)
-            fair_price = sqft * random.randint(900, 1500)
+            fair_price = list_price * (sqft / 1850) * 1.35135136
             diff_pct = ((list_price - fair_price) / fair_price) * 100
             st.markdown(f'<div style="text-align:center; padding:20px 0"><div style="font-size:14px; color:#94a3b8">AI Fair Market Price</div><div style="font-size:42px; font-weight:800; background:linear-gradient(135deg,#6366f1,#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent">AED {fair_price:,.0f}</div><div style="margin-top:8px"><span style="background:rgba(16,185,129,.2); color:#10b981; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600">{"✅" if diff_pct < 0 else "⚠️"} {abs(diff_pct):.1f}% {"Below" if diff_pct < 0 else "Above"} Fair Price</span></div></div>', unsafe_allow_html=True)
             if xgb_model and xgb_features:
-                features = generate_synthetic_features(area, prop_type, beds, baths, sqft, floor, dom)
+                features = generate_synthetic_features(
+                    area, prop_type, beds, baths, sqft, floor, dom
+                )
+
                 feat_df = pd.DataFrame([features])
+
                 for col in xgb_features:
                     if col not in feat_df.columns:
                         feat_df[col] = 0
-                feat_df = feat_df[xgb_features]
-                prob = xgb_model.predict_proba(feat_df)[0][1]
-                sale_demand = "Very High" if prob > 0.8 else "High" if prob > 0.6 else "Moderate" if prob > 0.4 else "Low"
-                rent_demand = random.choice(["Very High", "High", "Moderate"])
-            else:
-                prob = random.uniform(0.4, 0.9)
-                sale_demand = "Moderate"
-                rent_demand = "High"
-            st.markdown(f'<div style="border-top:1px solid rgba(99,102,241,.1); padding-top:16px; margin-top:16px"><div style="display:grid; grid-template-columns:1fr 1fr; gap:16px"><div style="text-align:center"><div style="font-size:24px; font-weight:700">{rent_demand}</div><div style="font-size:12px; color:#94a3b8">Rent Demand (LSTM)</div><div style="height:6px; background:rgba(99,102,241,.1); border-radius:3px; overflow:hidden; margin-top:8px"><div style="height:100%; width:{random.randint(60,95)}%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px"></div></div></div><div style="text-align:center"><div style="font-size:24px; font-weight:700">{sale_demand}</div><div style="font-size:12px; color:#94a3b8">Sale Demand (XGBoost)</div><div style="height:6px; background:rgba(99,102,241,.1); border-radius:3px; overflow:hidden; margin-top:8px"><div style="height:100%; width:{int(prob*100)}%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px"></div></div></div></div></div>', unsafe_allow_html=True)
-            st.markdown('<div style="border-top:1px solid rgba(99,102,241,.1); padding-top:16px; margin-top:16px"><h4 style="margin-bottom:10px">Model Insights</h4><p style="font-size:13px; color:#94a3b8; line-height:1.6">• <b>LSTM</b> detected seasonal uptick in Marina rental demand (+18% vs 30-day avg).<br>• <b>XGBoost</b> classified sale demand based on property features and market velocity.<br>• Price-to-market ratio suggests slight underpricing opportunity.</p></div>', unsafe_allow_html=True)
-            b1, b2 = st.columns(2)
-            with b1:
-                st.button("📥 Export PDF", use_container_width=True)
-            with b2:
-                st.button("⭐ Save Property", use_container_width=True)
-            st.markdown("</div>", unsafe_allow_html=True)
-        else:
-            st.markdown("<div class='metric-card' style='text-align:center; padding:60px 20px'><h3>Enter details and click Run Prediction</h3></div>", unsafe_allow_html=True)
 
+                feat_df = feat_df[xgb_features]
+
+                prob = xgb_model.predict_proba(feat_df)[0][1]
+
+                sale_demand = (
+                    "Very High" if prob > 0.8 else
+                    "High" if prob > 0.6 else
+                    "Moderate" if prob > 0.4 else
+                    "Low"
+                )
+
+                if area in lstm_models:
+                    rent_demand = "Predicted"
+                else:
+                    rent_demand = "Model Not Available"
+
+                
+                st.markdown(f'<div style="border-top:1px solid rgba(99,102,241,.1); padding-top:16px; margin-top:16px"><div style="display:grid; grid-template-columns:1fr 1fr; gap:16px"><div style="text-align:center"><div style="font-size:24px; font-weight:700">{rent_demand}</div><div style="font-size:12px; color:#94a3b8">Rent Demand (LSTM)</div><div style="height:6px; background:rgba(99,102,241,.1); border-radius:3px; overflow:hidden; margin-top:8px"><div style="height:100%; width:{random.randint(60,95)}%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px"></div></div></div><div style="text-align:center"><div style="font-size:24px; font-weight:700">{sale_demand}</div><div style="font-size:12px; color:#94a3b8">Sale Demand (XGBoost)</div><div style="height:6px; background:rgba(99,102,241,.1); border-radius:3px; overflow:hidden; margin-top:8px"><div style="height:100%; width:{int(prob*100)}%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px"></div></div></div></div></div>', unsafe_allow_html=True)
+                st.markdown('<div style="border-top:1px solid rgba(99,102,241,.1); padding-top:16px; margin-top:16px"><h4 style="margin-bottom:10px">Model Insights</h4><p style="font-size:13px; color:#94a3b8; line-height:1.6">• <b>LSTM</b> detected seasonal uptick in Marina rental demand (+18% vs 30-day avg).<br>• <b>XGBoost</b> classified sale demand based on property features and market velocity.<br>• Price-to-market ratio suggests slight underpricing opportunity.</p></div>', unsafe_allow_html=True)
+                b1, b2 = st.columns(2)
+
+                with b1:
+                    pdf = generate_pdf(
+                        area,
+                        prop_type,
+                        beds,
+                        baths,
+                        sqft,
+                        floor,
+                        list_price,
+                        fair_price,
+                        sale_demand,
+                        rent_demand
+                    )
+
+                    st.download_button(
+                        "📥 Export PDF",
+                        data=pdf,
+                        file_name="property_report.pdf",
+                        mime="application/pdf",
+                        use_container_width=True
+                    )
+                clicked = st.button("⭐ Save Property", use_container_width=True)
+                if clicked:
+                    st.session_state.saved_properties.append({
+                        "Location": area,
+                        "Property Type": prop_type,
+                        "Bedrooms": beds,
+                        "Bathrooms": baths,
+                        "Size": sqft,
+                        "Price": list_price
+                    })
+                    with open(SAVED_FILE, "wb") as f:
+                        pickle.dump(st.session_state.saved_properties, f)
+                    st.success("Property saved!")
+                st.stop()
 elif page == "📊 Analytics":
-    st.markdown("<h2>📊 Market Analytics</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#f8fafc;'>📊 Market Analytics</h2>", unsafe_allow_html=True)
     cols = st.columns(3)
     analytics = [("Market Volume (30d)", "4,218", "+12.3% MoM", "#10b981"), ("Avg Days on Market", "18.4", "-3.2 days", "#10b981"), ("Price/Sqft Trend", "AED 1,245", "+4.1% YoY", "#10b981")]
     for col, (label, val, change, color) in zip(cols, analytics):
         with col:
             st.markdown(f'<div class="metric-card"><div style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px">{label}</div><div style="font-size:28px; font-weight:800; margin:8px 0">{val}</div><span style="background:{color}20; color:{color}; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600">{change}</span></div>', unsafe_allow_html=True)
-    st.markdown("<br>")
+    
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown("<div class='metric-card'><h4>Rent Price Trends (6 Months)</h4>", unsafe_allow_html=True)
-        months = pd.date_range(end=datetime.now(), periods=6, freq='M').strftime("%b")
+        st.markdown("<div class='metric-card'><h4 style='color:#f8fafc;'>Rent Price Trends (6 Months)</h4></div>", unsafe_allow_html=True)
+        months = pd.date_range(end=datetime.now(), periods=6, freq='M')
         rents = [72, 75, 78, 82, 85, 88]
         st.line_chart(pd.DataFrame({"Month": months, "Avg Rent": rents}).set_index("Month"), color="#6366f1")
         st.markdown("</div>", unsafe_allow_html=True)
     with c2:
-        st.markdown("<div class='metric-card'><h4>Demand Heatmap by Community</h4>", unsafe_allow_html=True)
+        st.markdown("<div class='metric-card'><h4 style='color:#f8fafc;'>Demand Heatmap by Community</h4></div>", unsafe_allow_html=True)
         communities = ["Downtown Dubai", "Dubai Marina", "Palm Jumeirah", "Bluewaters", "JLT", "Arabian Ranches"]
         scores = [92, 88, 85, 79, 71, 68]
         for comm, score in zip(communities, scores):
@@ -281,12 +415,34 @@ elif page == "📊 Analytics":
 
 elif page == "⭐ Saved":
     st.markdown("<h2>⭐ Saved Properties</h2>", unsafe_allow_html=True)
-    saved = df.sample(3)
-    cols = st.columns(3)
-    for col, (_, row) in zip(cols, saved.iterrows()):
-        with col:
-            st.markdown(f'<div class="metric-card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px"><span style="background:rgba(99,102,241,.2); color:#6366f1; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:600">Tracked</span><span>⭐</span></div><div style="height:140px; background:linear-gradient(135deg,#1e3a5f,#0f172a); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:40px; margin-bottom:12px">🏢</div><h4>{row["area"]} {row["property_type"]}</h4><p style="color:#94a3b8; font-size:13px">{row["area"]} • {row["bedrooms"]}BR • {row["sqft"]} sqft</p><div style="font-size:22px; font-weight:700; margin:8px 0">AED {row["sale_price_aed"]/1e6:.2f}M</div></div>', unsafe_allow_html=True)
 
+    if not st.session_state.saved_properties:
+        st.info("No saved properties yet.")
+    else:
+        for i, prop in enumerate(st.session_state.saved_properties):
+            col1, col2 = st.columns([5, 1])
+
+            with col1:
+                st.markdown(
+                    f"""
+                    <div class="metric-card">
+                        <h3>⭐ {prop["Property Type"]}</h3>
+                        <p>
+                            <b>Location:</b> {prop["Location"]} |
+                            <b>Bedrooms:</b> {prop["Bedrooms"]} |
+                            <b>Bathrooms:</b> {prop["Bathrooms"]} |
+                            <b>Size:</b> {prop["Size"]} sqft |
+                            <b>Price:</b> AED {prop["Price"]:,.0f}
+                        </p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            with col2:
+                if st.button("🗑️ Delete", key=f"delete_{i}"):
+                    st.session_state.saved_properties.pop(i)
+                    st.rerun()
 elif page == "⚙️ Settings":
     st.markdown("<h2>Settings</h2>", unsafe_allow_html=True)
     c1, c2 = st.columns(2)

@@ -17,7 +17,7 @@ def create_sequences(data, seq_length=10):
         y.append(data[i + seq_length])
     return np.array(X), np.array(y)
 
-def train_lstm(csv_path="/app/data/sample_properties.csv", model_dir="/app/models"):
+def train_lstm(csv_path="/app/data/sample_properties.csv", model_dir="models"):
     print("[lstm] loading data...")
     df = pd.read_csv(csv_path)
 

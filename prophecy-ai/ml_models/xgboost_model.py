@@ -7,7 +7,7 @@ import pickle
 import json
 import os
 
-def train_xgboost(csv_path="/app/data/sample_properties.csv", model_dir="/app/models"):
+def train_xgboost(csv_path="data/sample_properties.csv", model_dir="/models"):
     print("[xgb] loading data...")
     df = pd.read_csv(csv_path)
 

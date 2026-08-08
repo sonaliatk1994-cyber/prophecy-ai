@@ -1,0 +1,32 @@
+{
+  "Arabian Ranches": {
+    "predicted_rent": 955976.8125,
+    "rmse": 0.16307160320218028,
+    "samples": 547
+  },
+  "Bluewaters": {
+    "predicted_rent": 1592674.75,
+    "rmse": 0.16751022741778607,
+    "samples": 554
+  },
+  "Downtown Dubai": {
+    "predicted_rent": 2551755.25,
+    "rmse": 0.18874750773571822,
+    "samples": 552
+  },
+  "Dubai Marina": {
+    "predicted_rent": 1515599.375,
+    "rmse": 0.18673939211718166,
+    "samples": 560
+  },
+  "JLT": {
+    "predicted_rent": 1099220.25,
+    "rmse": 0.19929034685593383,
+    "samples": 544
+  },
+  "Palm Jumeirah": {
+    "predicted_rent": 2025888.375,
+    "rmse": 0.17303985641747227,
+    "samples": 563
+  }
+}
