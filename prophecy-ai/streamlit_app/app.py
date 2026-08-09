@@ -195,10 +195,8 @@ if page == "🏠 Dashboard":
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("<div class='metric-card'><h4 style='color:white;'>Quick Actions</h4></div>", unsafe_allow_html=True)
-        if st.button("🎯 New Prediction", use_container_width=True):
-            st.session_state.nav_page = "🧠 AI Prediction"
-            st.rerun()
-
+        if st.button("🎯 New Prediction", use_container_width=True, on_click=lambda: st.session_state.update(nav_page="🧠 AI Prediction")):
+            pass
         if st.button("🔍 Search Properties", use_container_width=True):
             page = "Property Search"
             st.rerun()
