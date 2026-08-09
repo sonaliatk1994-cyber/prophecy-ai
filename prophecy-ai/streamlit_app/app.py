@@ -394,30 +394,26 @@ elif page == "🧠 AI Prediction":
                 
                 st.markdown(f'<div style="border-top:1px solid rgba(99,102,241,.1); padding-top:16px; margin-top:16px"><div style="display:grid; grid-template-columns:1fr 1fr; gap:16px"><div style="text-align:center"><div style="font-size:24px; font-weight:700">{rent_demand}</div><div style="font-size:12px; color:#94a3b8">Rent Demand (LSTM)</div><div style="height:6px; background:rgba(99,102,241,.1); border-radius:3px; overflow:hidden; margin-top:8px"><div style="height:100%; width:{random.randint(60,95)}%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px"></div></div></div><div style="text-align:center"><div style="font-size:24px; font-weight:700">{sale_demand}</div><div style="font-size:12px; color:#94a3b8">Sale Demand (XGBoost)</div><div style="height:6px; background:rgba(99,102,241,.1); border-radius:3px; overflow:hidden; margin-top:8px"><div style="height:100%; width:{int(prob*100)}%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px"></div></div></div></div></div>', unsafe_allow_html=True)
                 st.markdown('<div style="border-top:1px solid rgba(99,102,241,.1); padding-top:16px; margin-top:16px"><h4 style="margin-bottom:10px">Model Insights</h4><p style="font-size:13px; color:#94a3b8; line-height:1.6">• <b>LSTM</b> detected seasonal uptick in Marina rental demand (+18% vs 30-day avg).<br>• <b>XGBoost</b> classified sale demand based on property features and market velocity.<br>• Price-to-market ratio suggests slight underpricing opportunity.</p></div>', unsafe_allow_html=True)
-                b1, b2 = st.columns(2)
-
-                with b1:
-                    pdf = generate_pdf(
-                        area,
-                        prop_type,
-                        beds,
-                        baths,
-                        sqft,
-                        floor,
-                        list_price,
-                        fair_price,
-                        sale_demand,
-                        rent_demand
-                    )
-
-                    st.download_button(
-                        "📥 Export PDF",
-                        data=pdf,
-                        file_name="property_report.pdf",
-                        mime="application/pdf",
-                        use_container_width=True
-                    )
-                if st.button("⭐ Save Property", use_container_width=True):
+                pdf = generate_pdf(
+                    area,
+                    prop_type,
+                    beds,
+                    baths,
+                    sqft,
+                    floor,
+                    list_price,
+                    fair_price,
+                    sale_demand,
+                    rent_demand
+                )
+                st.download_button(
+    "📥 Export PDF",
+    data=pdf,
+    file_name="property_report.pdf",
+    mime="application/pdf",
+    use_container_width=True
+)
+                if st.button("⭐ Save Property", use_container_width=True):    
                     st.session_state.saved_properties.append({
                         "Location": area,
                         "Property Type": prop_type,
