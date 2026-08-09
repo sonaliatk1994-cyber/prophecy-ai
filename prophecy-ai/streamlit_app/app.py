@@ -197,16 +197,14 @@ if page == "🏠 Dashboard":
         st.markdown("<div class='metric-card'><h4 style='color:white;'>Quick Actions</h4></div>", unsafe_allow_html=True)
         if st.button("🎯 New Prediction", use_container_width=True, on_click=lambda: st.session_state.update(nav_page="🧠 AI Prediction")):
             pass
-        if st.button("🔍 Search Properties", use_container_width=True):
-            page = "Property Search"
-            st.rerun()
+        if st.button("🔍 Search Properties", use_container_width=True, on_click=lambda: st.session_state.update(nav_page="🔍 Property Search")):
+            pass
 
-        if st.button("⭐ View Saved", use_container_width=True):
-            page = "Saved"
-            st.rerun()
+        if st.button("⭐ View Saved", use_container_width=True, on_click=lambda: st.session_state.update(nav_page="⭐ Saved")):
+            pass
 
-        if st.button("📈 Market Analytics", use_container_width=True):
-            page = "Analytics"
+        if st.button("📈 Market Analytics", use_container_width=True, on_click=lambda: st.session_state.update(nav_page="📊 Analytics")):
+            pass
         with c2:
            st.markdown("<div class='metric-card'><h4 style='color:white;'>Recent Activity</h4></div>", unsafe_allow_html=True)
            activities = [("🏠 Viewed Marina View Tower 3B", "2m ago"), ("💰 Predicted Downtown Apt 2B", "15m ago"), ("⭐ Saved Palm Jumeirah Villa", "1h ago"), ("📊 Checked JLT Market Report", "3h ago")]
