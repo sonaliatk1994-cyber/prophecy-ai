@@ -407,12 +407,12 @@ elif page == "🧠 AI Prediction":
                     rent_demand
                 )
                 st.download_button(
-    "📥 Export PDF",
-    data=pdf,
-    file_name="property_report.pdf",
-    mime="application/pdf",
-    use_container_width=True
-)
+                    "📥 Export PDF",
+                    data=pdf,
+                    file_name="property_report.pdf",
+                    mime="application/pdf",
+                    use_container_width=True
+                )
                 if st.button("⭐ Save Property", use_container_width=True):    
                     st.session_state.saved_properties.append({
                         "Location": area,
