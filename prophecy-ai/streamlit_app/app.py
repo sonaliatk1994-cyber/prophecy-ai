@@ -33,6 +33,9 @@ def load_css():
     .prediction-box { background: linear-gradient(135deg,rgba(99,102,241,.15),rgba(139,92,246,.15)); border: 1px solid rgba(99,102,241,.3); border-radius: 16px; padding: 24px; }
     .live-dot { display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 1.5s infinite; margin-right: 6px; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    [data-testid="stWidgetLabel"] p {
+    color: #f8fafc !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -176,7 +179,7 @@ lstm_models = load_lstm_models()
 xgb_model, xgb_features = load_xgb_model()
 
 if page == "🏠 Dashboard":
-    st.markdown("<h2>Welcome back, Sarah 👋</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white;'>Welcome back, Sarah 👋</h2>", unsafe_allow_html=True)
     st.markdown("<p style='color:#94a3b8'>Here is your market snapshot for today.</p>", unsafe_allow_html=True)
     cols = st.columns(4)
     metrics = [
@@ -188,23 +191,23 @@ if page == "🏠 Dashboard":
     for col, (label, val, change, color) in zip(cols, metrics):
         with col:
             st.markdown(f'<div class="metric-card"><div style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px">{label}</div><div style="font-size:28px; font-weight:800; margin:8px 0">{val}</div><span style="background:{color}20; color:{color}; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600">{change}</span></div>', unsafe_allow_html=True)
-    st.markdown("<br>", unsafe_allow_html=True)
+    
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown("<div class='metric-card'><h4>Quick Actions</h4></div>", unsafe_allow_html=True)
+        st.markdown("<div class='metric-card'><h4 style='color:white;'>Quick Actions</h4></div>", unsafe_allow_html=True)
         st.button("🎯 New Prediction", use_container_width=True)
         st.button("🔍 Search Properties", use_container_width=True)
         st.button("⭐ View Saved", use_container_width=True)
         st.button("📈 Market Analytics", use_container_width=True)
     with c2:
-        st.markdown("<div class='metric-card'><h4>Recent Activity</h4>", unsafe_allow_html=True)
+        st.markdown("<div class='metric-card'><h4 style='color:white;'>Recent Activity</h4></div>", unsafe_allow_html=True)
         activities = [("🏠 Viewed Marina View Tower 3B", "2m ago"), ("💰 Predicted Downtown Apt 2B", "15m ago"), ("⭐ Saved Palm Jumeirah Villa", "1h ago"), ("📊 Checked JLT Market Report", "3h ago")]
         for act, time in activities:
             st.markdown(f"<div style='display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(99,102,241,.1)'><span>{act}</span><span style='color:#94a3b8; font-size:12px'>{time}</span></div>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
 elif page == "🔮 Predictions":
-    st.markdown("<h2>Live Prediction Dashboard <span class='live-dot'></span></h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white;'>Live Prediction Dashboard <span class='live-dot'></span></h2>", unsafe_allow_html=True)
     cols = st.columns(4)
     pred_metrics = [("Rent Demand Index", "78.4", "High ↑", "#10b981"), ("Sale Demand Index", "64.2", "Moderate →", "#f59e0b"), ("Fair Price Accuracy", "94.1%", "MAE 2.3%", "#6366f1"), ("Pipeline Latency", "1.2s", "Kafka+Spark", "#6366f1")]
     for col, (label, val, change, color) in zip(cols, pred_metrics):
@@ -227,7 +230,7 @@ elif page == "🔮 Predictions":
             st.markdown(f'<div style="margin-bottom:16px"><div style="display:flex; justify-content:space-between; margin-bottom:6px"><span style="font-weight:600">{name}</span><span style="font-weight:600">{score}</span></div><div style="height:6px; background:rgba(99,102,241,.1); border-radius:3px; overflow:hidden"><div style="height:100%; width:{pct*100}%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px"></div></div></div>', unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
     st.write("")
-    st.markdown("<div class='metric-card'><h4>Top Predicted Properties</h4>", unsafe_allow_html=True)
+    st.markdown("<div class='metric-card'><h4 style='color:white;'>Top Predicted Properties</h4>", unsafe_allow_html=True)
     top_props = df.nlargest(5, 'sale_price_aed')[['area', 'property_type', 'bedrooms', 'sqft', 'sale_price_aed', 'days_on_market']]
     for _, row in top_props.iterrows():
         demand = max(0, 100 - row['days_on_market'] * 1.5)
@@ -235,7 +238,7 @@ elif page == "🔮 Predictions":
     st.markdown("</div>", unsafe_allow_html=True)
 
 elif page == "🔍 Property Search":
-    st.markdown("<h2>Property Search</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white;'>Property Search</h2>", unsafe_allow_html=True)
     st.markdown("<p style='color:#94a3b8'>Find properties with AI-powered demand and price predictions.</p>", unsafe_allow_html=True)
     search_query = st.text_input("Search Properties", placeholder="Search by area, property name, or location...")
     search_button = st.button("Search")
@@ -282,7 +285,7 @@ elif page == "🔍 Property Search":
             fair = row['sale_price_aed'] * random.uniform(0.95, 1.05)
             emojis = {"Apartment": "🏢", "Villa": "🏡", "Townhouse": "🏘️", "Penthouse": "🌆"}
             emoji = emojis.get(row['property_type'], "🏠")
-            st.markdown(f'<div class="metric-card" style="cursor:pointer; margin-bottom:16px"><div style="height:140px; background:linear-gradient(135deg,#1e3a5f,#0f172a); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:48px; margin-bottom:12px">{emoji}</div><h4>{row["area"]} {row["property_type"]}</h4><p style="color:#94a3b8; font-size:13px">{row["area"]} • {row["bedrooms"]}BR • {row["sqft"]} sqft</p><div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px"><span style="font-size:20px; font-weight:700">AED {row["sale_price_aed"]/1e6:.2f}M</span>{demand_badge(demand)}</div><div style="margin-top:8px; font-size:12px; color:#94a3b8">Fair: <b style="color:#10b981">AED {fair/1e6:.2f}M</b> ✅</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-card" style="cursor:pointer; margin-bottom:16px"><div style="height:140px; background:linear-gradient(135deg,#1e3a5f,#0f172a); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:48px; margin-bottom:12px">{emoji}</div><h4 style="color:white; font-size:20px; margin-bottom:8px">{row["area"]} {row["property_type"]}</h4><p style="color:#94a3b8; font-size:13px">{row["area"]} • {row["bedrooms"]}BR • {row["sqft"]} sqft</p><div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px"><span style="font-size:20px; font-weight:700; color:white">AED {row["sale_price_aed"]/1e6:.2f}M</span>{demand_badge(demand)}</div><div style="margin-top:8px; font-size:12px; color:#94a3b8">Fair: <b style="color:#10b981">AED {fair/1e6:.2f}M</b> ✅</div></div>', unsafe_allow_html=True)
             if st.button("⭐ Save Property", key=f"save_property_{row.name}"):
                 st.session_state.saved_properties.append({
                     "Location": row["area"],
@@ -294,12 +297,12 @@ elif page == "🔍 Property Search":
                 })
                 st.success("Property saved!")
 elif page == "🧠 AI Prediction":
-    st.markdown("<h2>🧠 AI Price Prediction</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white;'>🧠 AI Price Prediction</h2>", unsafe_allow_html=True)
     st.markdown("<p style='color:#94a3b8'>Enter property details to get real-time demand and price forecasts.</p>", unsafe_allow_html=True)
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
-        st.markdown("<h4>Property Details</h4>", unsafe_allow_html=True)
+        st.markdown("<h4 style='color:white;'>Property Details</h4>", unsafe_allow_html=True)
         area = st.selectbox("Location", ["Dubai Marina", "Downtown Dubai", "Palm Jumeirah", "JLT", "Arabian Ranches", "Bluewaters"])
         prop_type = st.selectbox("Property Type", ["Apartment", "Villa", "Townhouse", "Penthouse"])
         c1a, c1b = st.columns(2)
@@ -415,7 +418,7 @@ elif page == "📊 Analytics":
         st.markdown("</div>", unsafe_allow_html=True)
 
 elif page == "⭐ Saved":
-    st.markdown("<h2>⭐ Saved Properties</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#f8fafc;'>⭐ Saved Properties</h2>", unsafe_allow_html=True)
 
     if not st.session_state.saved_properties:
         st.info("No saved properties yet.")
@@ -445,17 +448,17 @@ elif page == "⭐ Saved":
                     st.session_state.saved_properties.pop(i)
                     st.rerun()
 elif page == "⚙️ Settings":
-    st.markdown("<h2>Settings</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#f8fafc;'>Settings</h2>", unsafe_allow_html=True)
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown("<div class='metric-card'><h4>Profile</h4>", unsafe_allow_html=True)
+        st.markdown("<div class='metric-card'><h4 style='color:#f8fafc;'>Profile</h4>", unsafe_allow_html=True)
         st.text_input("Full Name", "Sarah Al-Rashid")
         st.text_input("Email", "sarah@realestate.ae")
         st.text_input("Phone", "+971 50 123 4567")
         st.button("Save Changes", use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
     with c2:
-        st.markdown("<div class='metric-card'><h4>Preferences</h4>", unsafe_allow_html=True)
+        st.markdown("<div class='metric-card'><h4 style='color:#f8fafc;'>Preferences</h4>", unsafe_allow_html=True)
         st.selectbox("Currency", ["AED", "USD"])
         st.selectbox("Prediction Horizon", ["6 Hours", "24 Hours", "7 Days"])
         st.checkbox("Email Alerts", True)
