@@ -364,6 +364,9 @@ elif page == "🧠 AI Prediction":
         )
         diff_pct = ((list_price - fair_price) / fair_price) * 100
         st.markdown(f'<div style="text-align:center; padding:20px 0"><div style="font-size:14px; color:#94a3b8">AI Fair Market Price</div><div style="font-size:42px; font-weight:800; background:linear-gradient(135deg,#6366f1,#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent">AED {fair_price:,.0f}</div><div style="margin-top:8px"><span style="background:rgba(16,185,129,.2); color:#10b981; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600">{"✅" if diff_pct < 0 else "⚠️"} {abs(diff_pct):.1f}% {"Below" if diff_pct < 0 else "Above"} Fair Price</span></div></div>', unsafe_allow_html=True)
+        b1, b2 = st.columns(2)
+
+
         prob = 0.5
         sale_demand = "Moderate"
         rent_demand = "Model Not Available"
@@ -393,41 +396,39 @@ elif page == "🧠 AI Prediction":
                     rent_demand = "Predicted"
                 else:
                     rent_demand = "Model Not Available"
-
-                
                 st.markdown(f'<div style="border-top:1px solid rgba(99,102,241,.1); padding-top:16px; margin-top:16px"><div style="display:grid; grid-template-columns:1fr 1fr; gap:16px"><div style="text-align:center"><div style="font-size:24px; font-weight:700">{rent_demand}</div><div style="font-size:12px; color:#94a3b8">Rent Demand (LSTM)</div><div style="height:6px; background:rgba(99,102,241,.1); border-radius:3px; overflow:hidden; margin-top:8px"><div style="height:100%; width:{random.randint(60,95)}%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px"></div></div></div><div style="text-align:center"><div style="font-size:24px; font-weight:700">{sale_demand}</div><div style="font-size:12px; color:#94a3b8">Sale Demand (XGBoost)</div><div style="height:6px; background:rgba(99,102,241,.1); border-radius:3px; overflow:hidden; margin-top:8px"><div style="height:100%; width:{int(prob*100)}%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px"></div></div></div></div></div>', unsafe_allow_html=True)
                 st.markdown('<div style="border-top:1px solid rgba(99,102,241,.1); padding-top:16px; margin-top:16px"><h4 style="margin-bottom:10px">Model Insights</h4><p style="font-size:13px; color:#94a3b8; line-height:1.6">• <b>LSTM</b> detected seasonal uptick in Marina rental demand (+18% vs 30-day avg).<br>• <b>XGBoost</b> classified sale demand based on property features and market velocity.<br>• Price-to-market ratio suggests slight underpricing opportunity.</p></div>', unsafe_allow_html=True)
-    pdf = generate_pdf(
-            area,
-            prop_type,
-            beds,
-            baths,
-            sqft,
-            floor,
-            list_price,
-            fair_price,
-            sale_demand,
-            rent_demand
-        )
-    st.download_button(
-            "📥 Export PDF",
-            data=pdf,
-            file_name="property_report.pdf",
-            mime="application/pdf",
-            use_container_width=True
-        )
-    if st.button("⭐ Save Property", use_container_width=True):    
-            st.session_state.saved_properties.append({
-                "Location": area,
-                "Property Type": prop_type,
-                "Bedrooms": beds,
-                "Bathrooms": baths,
-                "Size": sqft,
-                "Price": list_price
-            })
-            with open(SAVED_FILE, "wb") as f:
-                pickle.dump(st.session_state.saved_properties, f)
-            st.success("Property saved!")
+                pdf = generate_pdf(
+                        area,
+                        prop_type,
+                        beds,
+                        baths,
+                        sqft,
+                        floor,
+                        list_price,
+                        fair_price,
+                        sale_demand,
+                        rent_demand
+                )
+                b1.download_button(
+                        "📥 Export PDF",
+                        data=pdf,
+                        file_name="property_report.pdf",
+                        mime="application/pdf",
+                        use_container_width=True
+                )
+                if b2.button("⭐ Save Property", use_container_width=True):   
+                        st.session_state.saved_properties.append({
+                            "Location": area,
+                            "Property Type": prop_type,
+                            "Bedrooms": beds,
+                            "Bathrooms": baths,
+                            "Size": sqft,
+                            "Price": list_price
+                })
+                        with open(SAVED_FILE, "wb") as f:
+                            pickle.dump(st.session_state.saved_properties, f)
+                        st.success("Property saved!")
             
 elif page == "📊 Analytics":
     st.markdown("<h2 style='color:#f8fafc;'>📊 Market Analytics</h2>", unsafe_allow_html=True)
