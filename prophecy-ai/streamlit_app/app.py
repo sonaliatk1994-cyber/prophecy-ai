@@ -172,7 +172,7 @@ def demand_badge(val):
 
 st.sidebar.markdown("<h1 style='text-align:center; background:linear-gradient(135deg,#6366f1,#8b5cf6); -webkit-background-clip:text; -webkit-text-fill-color:transparent'>Prophecy AI</h1>", unsafe_allow_html=True)
 st.sidebar.markdown("<p style='text-align:center; color:#94a3b8; font-size:12px'>MSc Data Science Project</p>", unsafe_allow_html=True)
-page = st.sidebar.radio("Navigation", ["🏠 Dashboard", "🔮 Predictions", "🔍 Property Search", "📊 Analytics", "🧠 AI Prediction", "⭐ Saved", "⚙️ Settings"])
+page = st.sidebar.radio("Navigation", ["🏠 Dashboard", "🔮 Predictions", "🔍 Property Search", "📊 Analytics", "🧠 AI Prediction", "⭐ Saved", "⚙️ Settings"], key="nav_page")
 
 df = load_data()
 lstm_models = load_lstm_models()
@@ -196,7 +196,7 @@ if page == "🏠 Dashboard":
     with c1:
         st.markdown("<div class='metric-card'><h4 style='color:white;'>Quick Actions</h4></div>", unsafe_allow_html=True)
         if st.button("🎯 New Prediction", use_container_width=True):
-            page = "Predictions"
+            st.session_state.nav_page = "🧠 AI Prediction"
             st.rerun()
 
         if st.button("🔍 Search Properties", use_container_width=True):
