@@ -185,14 +185,18 @@ nav_options = [
         "⚙️ Settings"
     ]
 
+def update_navigation():
+    st.session_state.nav_page = st.session_state.nav_radio
+
 selected_page = st.sidebar.radio(
     "Navigation",
     nav_options,
-    index=nav_options.index(st.session_state.nav_page)
+    index=nav_options.index(st.session_state.nav_page),
+    key="nav_radio",
+    on_change=update_navigation
 )
 
-st.session_state.nav_page = selected_page
-page = selected_page
+page = st.session_state.nav_page
 
 df = load_data()
 lstm_models = load_lstm_models()
