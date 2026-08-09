@@ -417,8 +417,7 @@ elif page == "🧠 AI Prediction":
                         mime="application/pdf",
                         use_container_width=True
                     )
-                clicked = st.button("⭐ Save Property", use_container_width=True)
-                if clicked:
+                if st.button("⭐ Save Property", use_container_width=True):
                     st.session_state.saved_properties.append({
                         "Location": area,
                         "Property Type": prop_type,
