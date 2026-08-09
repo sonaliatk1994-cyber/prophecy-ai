@@ -324,10 +324,47 @@ elif page == "🧠 AI Prediction":
             st.session_state.prediction_run = True
             st.markdown("<div class='prediction-box'>", unsafe_allow_html=True)
             st.markdown("<div style='display:flex; align-items:center; gap:10px; margin-bottom:16px'><span class='live-dot'></span><span style='font-weight:600'>Prediction Generated</span><span style='color:#94a3b8; font-size:12px; margin-left:auto'>1.2s latency</span></div>", unsafe_allow_html=True)
-            fair_price = list_price * (sqft / 1850) * 1.35135136
-            diff_pct = ((list_price - fair_price) / fair_price) * 100
-            st.markdown(f'<div style="text-align:center; padding:20px 0"><div style="font-size:14px; color:#94a3b8">AI Fair Market Price</div><div style="font-size:42px; font-weight:800; background:linear-gradient(135deg,#6366f1,#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent">AED {fair_price:,.0f}</div><div style="margin-top:8px"><span style="background:rgba(16,185,129,.2); color:#10b981; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600">{"✅" if diff_pct < 0 else "⚠️"} {abs(diff_pct):.1f}% {"Below" if diff_pct < 0 else "Above"} Fair Price</span></div></div>', unsafe_allow_html=True)
-            if xgb_model and xgb_features:
+        # Location multiplier
+        location_factor = {
+            "Dubai Marina": 1.10,
+            "Palm Jumeirah": 1.35,
+            "Downtown Dubai": 1.25,
+            "Business Bay": 1.05,
+            "Jumeirah": 1.15,
+            "Dubai Hills": 1.08,
+        }.get(area, 1.0)
+
+        # Property type multiplier
+        property_type_factor = {
+            "Apartment": 1.00,
+            "Villa": 1.30,
+            "Townhouse": 1.15,
+            "Penthouse": 1.45,
+        }.get(prop_type, 1.0)
+
+        # Individual property feature adjustments
+        bedroom_factor = 1 + ((beds - 3) * 0.06)
+        bathroom_factor = 1 + ((baths - 3) * 0.03)
+        floor_factor = 1 + ((floor - 10) * 0.005)
+        size_factor = sqft / 1850
+
+        # Days on market adjustment
+        market_factor = 1 - min(dom * 0.002, 0.20)
+
+        # Calculate AI fair market price
+        fair_price = (
+            list_price
+            * size_factor
+            * location_factor
+            * property_type_factor
+            * bedroom_factor
+            * bathroom_factor
+            * floor_factor
+            * market_factor
+        )
+        diff_pct = ((list_price - fair_price) / fair_price) * 100
+        st.markdown(f'<div style="text-align:center; padding:20px 0"><div style="font-size:14px; color:#94a3b8">AI Fair Market Price</div><div style="font-size:42px; font-weight:800; background:linear-gradient(135deg,#6366f1,#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent">AED {fair_price:,.0f}</div><div style="margin-top:8px"><span style="background:rgba(16,185,129,.2); color:#10b981; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600">{"✅" if diff_pct < 0 else "⚠️"} {abs(diff_pct):.1f}% {"Below" if diff_pct < 0 else "Above"} Fair Price</span></div></div>', unsafe_allow_html=True)
+        if xgb_model and xgb_features:
                 features = generate_synthetic_features(
                     area, prop_type, beds, baths, sqft, floor, dom
                 )
