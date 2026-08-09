@@ -195,13 +195,23 @@ if page == "🏠 Dashboard":
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("<div class='metric-card'><h4 style='color:white;'>Quick Actions</h4></div>", unsafe_allow_html=True)
-        st.button("🎯 New Prediction", use_container_width=True)
-        st.button("🔍 Search Properties", use_container_width=True)
-        st.button("⭐ View Saved", use_container_width=True)
-        st.button("📈 Market Analytics", use_container_width=True)
-    with c2:
-        st.markdown("<div class='metric-card'><h4 style='color:white;'>Recent Activity</h4></div>", unsafe_allow_html=True)
-        activities = [("🏠 Viewed Marina View Tower 3B", "2m ago"), ("💰 Predicted Downtown Apt 2B", "15m ago"), ("⭐ Saved Palm Jumeirah Villa", "1h ago"), ("📊 Checked JLT Market Report", "3h ago")]
+        if st.button("🎯 New Prediction", use_container_width=True):
+            page = "Predictions"
+            st.rerun()
+
+        if st.button("🔍 Search Properties", use_container_width=True):
+            page = "Property Search"
+            st.rerun()
+
+        if st.button("⭐ View Saved", use_container_width=True):
+            page = "Saved"
+            st.rerun()
+
+        if st.button("📈 Market Analytics", use_container_width=True):
+            page = "Analytics"
+        with c2:
+           st.markdown("<div class='metric-card'><h4 style='color:white;'>Recent Activity</h4></div>", unsafe_allow_html=True)
+           activities = [("🏠 Viewed Marina View Tower 3B", "2m ago"), ("💰 Predicted Downtown Apt 2B", "15m ago"), ("⭐ Saved Palm Jumeirah Villa", "1h ago"), ("📊 Checked JLT Market Report", "3h ago")]
         for act, time in activities:
             st.markdown(f"<div style='display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(99,102,241,.1)'><span>{act}</span><span style='color:#94a3b8; font-size:12px'>{time}</span></div>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
@@ -364,7 +374,8 @@ elif page == "🧠 AI Prediction":
         )
         diff_pct = ((list_price - fair_price) / fair_price) * 100
         st.markdown(f'<div style="text-align:center; padding:20px 0"><div style="font-size:14px; color:#94a3b8">AI Fair Market Price</div><div style="font-size:42px; font-weight:800; background:linear-gradient(135deg,#6366f1,#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent">AED {fair_price:,.0f}</div><div style="margin-top:8px"><span style="background:rgba(16,185,129,.2); color:#10b981; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600">{"✅" if diff_pct < 0 else "⚠️"} {abs(diff_pct):.1f}% {"Below" if diff_pct < 0 else "Above"} Fair Price</span></div></div>', unsafe_allow_html=True)
-        b1, b2 = st.columns(2)
+        action_area = st.container()
+        b1, b2 = action_area.columns(2)
         export_placeholder = b1.empty()
         save_placeholder = b2.empty()
         prob = 0.5
