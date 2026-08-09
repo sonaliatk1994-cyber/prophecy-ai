@@ -186,16 +186,13 @@ nav_options = [
     ]
 
 selected_page = st.sidebar.radio(
-        "Navigation",
-        nav_options,
-        index=nav_options.index(st.session_state.nav_page),
-        key="nav_radio"
-    )
+    "Navigation",
+    nav_options,
+    index=nav_options.index(st.session_state.nav_page)
+)
 
-if selected_page != st.session_state.nav_page:
-        st.session_state.nav_page = selected_page
-
-page = st.session_state.nav_page
+st.session_state.nav_page = selected_page
+page = selected_page
 
 df = load_data()
 lstm_models = load_lstm_models()
@@ -218,7 +215,7 @@ if page == "🏠 Dashboard":
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("<div class='metric-card'><h4 style='color:white;'>Quick Actions</h4></div>", unsafe_allow_html=True)
-        if st.button("🎯 New Prediction", use_container_width=True, on_click=lambda: st.session_state.update(page="🧠 AI Prediction")):
+        if st.button("🎯 New Prediction", use_container_width=True, on_click=lambda: st.session_state.update(nav_page="🧠 AI Prediction", nav_radio="🧠 AI Prediction")):
             pass
         if st.button("🔍 Search Properties", use_container_width=True, on_click=lambda: st.session_state.update(nav_page="🔍 Property Search")):
             pass
