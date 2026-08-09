@@ -172,7 +172,30 @@ def demand_badge(val):
 
 st.sidebar.markdown("<h1 style='text-align:center; background:linear-gradient(135deg,#6366f1,#8b5cf6); -webkit-background-clip:text; -webkit-text-fill-color:transparent'>Prophecy AI</h1>", unsafe_allow_html=True)
 st.sidebar.markdown("<p style='text-align:center; color:#94a3b8; font-size:12px'>MSc Data Science Project</p>", unsafe_allow_html=True)
-page = st.sidebar.radio("Navigation", ["🏠 Dashboard", "🔮 Predictions", "🔍 Property Search", "📊 Analytics", "🧠 AI Prediction", "⭐ Saved", "⚙️ Settings"], key="nav_page")
+if "nav_page" not in st.session_state:
+        st.session_state.nav_page = "🏠 Dashboard"
+
+nav_options = [
+        "🏠 Dashboard",
+        "🔮 Predictions",
+        "🔍 Property Search",
+        "📊 Analytics",
+        "🧠 AI Prediction",
+        "⭐ Saved",
+        "⚙️ Settings"
+    ]
+
+selected_page = st.sidebar.radio(
+        "Navigation",
+        nav_options,
+        index=nav_options.index(st.session_state.nav_page),
+        key="nav_radio"
+    )
+
+if selected_page != st.session_state.nav_page:
+        st.session_state.nav_page = selected_page
+
+page = st.session_state.nav_page
 
 df = load_data()
 lstm_models = load_lstm_models()
@@ -195,7 +218,7 @@ if page == "🏠 Dashboard":
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("<div class='metric-card'><h4 style='color:white;'>Quick Actions</h4></div>", unsafe_allow_html=True)
-        if st.button("🎯 New Prediction", use_container_width=True, on_click=lambda: st.session_state.update(nav_page="🧠 AI Prediction")):
+        if st.button("🎯 New Prediction", use_container_width=True, on_click=lambda: st.session_state.update(page="🧠 AI Prediction")):
             pass
         if st.button("🔍 Search Properties", use_container_width=True, on_click=lambda: st.session_state.update(nav_page="🔍 Property Search")):
             pass
@@ -423,7 +446,7 @@ elif page == "🧠 AI Prediction":
                         mime="application/pdf",
                         use_container_width=True
                 )
-                    if save_placeholder.button("⭐ Save Property", use_container_width=True):   
+                    if b2.button("⭐ Save Property", use_container_width=True):   
                         st.session_state.saved_properties.append({
                             "Location": area,
                             "Property Type": prop_type,
