@@ -365,8 +365,8 @@ elif page == "🧠 AI Prediction":
         diff_pct = ((list_price - fair_price) / fair_price) * 100
         st.markdown(f'<div style="text-align:center; padding:20px 0"><div style="font-size:14px; color:#94a3b8">AI Fair Market Price</div><div style="font-size:42px; font-weight:800; background:linear-gradient(135deg,#6366f1,#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent">AED {fair_price:,.0f}</div><div style="margin-top:8px"><span style="background:rgba(16,185,129,.2); color:#10b981; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600">{"✅" if diff_pct < 0 else "⚠️"} {abs(diff_pct):.1f}% {"Below" if diff_pct < 0 else "Above"} Fair Price</span></div></div>', unsafe_allow_html=True)
         b1, b2 = st.columns(2)
-
-
+        export_placeholder = b1.empty()
+        save_placeholder = b2.empty()
         prob = 0.5
         sale_demand = "Moderate"
         rent_demand = "Model Not Available"
@@ -410,14 +410,14 @@ elif page == "🧠 AI Prediction":
                         sale_demand,
                         rent_demand
                 )
-                b1.download_button(
+                export_placeholder.download_button(
                         "📥 Export PDF",
                         data=pdf,
                         file_name="property_report.pdf",
                         mime="application/pdf",
                         use_container_width=True
                 )
-                if b2.button("⭐ Save Property", use_container_width=True):   
+                if save_placeholder.button("⭐ Save Property", use_container_width=True):   
                         st.session_state.saved_properties.append({
                             "Location": area,
                             "Property Type": prop_type,
