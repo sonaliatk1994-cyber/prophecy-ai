@@ -350,7 +350,7 @@ elif page == "🧠 AI Prediction":
         predict_btn = st.button("🚀 Run Prediction", use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
     with c2:
-        if predict_btn or st.session_state.get("prediction_run", False):
+        if predict_btn:
             st.session_state.prediction_run = True
             st.markdown("<div class='prediction-box'>", unsafe_allow_html=True)
             st.markdown("<div style='display:flex; align-items:center; gap:10px; margin-bottom:16px'><span class='live-dot'></span><span style='font-weight:600'>Prediction Generated</span><span style='color:#94a3b8; font-size:12px; margin-left:auto'>1.2s latency</span></div>", unsafe_allow_html=True)
