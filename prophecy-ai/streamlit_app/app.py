@@ -440,13 +440,14 @@ elif page == "🧠 AI Prediction":
         b1, b2 = st.columns(2)
 
         with b1:
-            st.download_button(
-                "📄 Export PDF",
-                data=pdf,
-                file_name="property_report.pdf",
-                mime="application/pdf",
-                use_container_width=True
-            )
+          st.download_button(
+            "📄 Export PDF",
+            data=pdf,
+            file_name="property_report.pdf",
+            mime="application/pdf",
+            use_container_width=True,
+            key="export_pdf"
+          )
 
         with b2:
             if st.button("⭐ Save Property", use_container_width=True):
