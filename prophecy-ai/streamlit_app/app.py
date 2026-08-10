@@ -49,6 +49,9 @@ def load_css():
     [data-testid="stWidgetLabel"] p {
     color: #f8fafc !important;
     }
+    .stSidebar [data-testid="stWidgetLabel"] p {
+        color: #1f2937 !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
