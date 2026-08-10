@@ -29,6 +29,19 @@ def load_css():
     .main { background-color: #0f172a; color: #f8fafc; }
     .stButton>button { background: linear-gradient(135deg,#6366f1,#8b5cf6); color: white; border: none; border-radius: 10px; padding: 10px 24px; font-weight: 600; }
     .stButton>button:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(99,102,241,.3); }
+    .stDownloadButton>button {
+        background: linear-gradient(135deg,#6366f1,#8b5cf6) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 10px !important;
+        padding: 10px 24px !important;
+        font-weight: 600 !important;
+    }
+
+    .stDownloadButton>button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(99,102,241,.3);
+    }
     .metric-card { background: #1e293b; border: 1px solid rgba(99,102,241,.1); border-radius: 16px; padding: 20px; }
     .prediction-box { background: linear-gradient(135deg,rgba(99,102,241,.15),rgba(139,92,246,.15)); border: 1px solid rgba(99,102,241,.3); border-radius: 16px; padding: 24px; }
     .live-dot { display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 1.5s infinite; margin-right: 6px; }
