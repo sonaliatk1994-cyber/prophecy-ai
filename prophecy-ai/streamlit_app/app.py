@@ -204,8 +204,13 @@ nav_options = [
 def update_navigation():
     st.session_state.nav_page = st.session_state.nav_radio
 
-selected_page = st.sidebar.radio(
-    "Navigation",
+st.sidebar.markdown(
+    "<div style='color:#1f2937; font-size:16px; font-weight:600; margin-bottom:8px;'>Navigation</div>",
+    unsafe_allow_html=True
+)
+
+selected = st.sidebar.radio(
+    "",
     nav_options,
     index=nav_options.index(st.session_state.nav_page),
     key="nav_radio",
