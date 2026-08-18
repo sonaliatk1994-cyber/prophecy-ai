@@ -16,7 +16,7 @@ def main():
     os.makedirs(model_dir, exist_ok=True)
 
     print("=" * 50)
-    print("Prophecy AI - Model Training Pipeline")
+    print("EstatePredict - Model Training Pipeline")
     print("=" * 50)
 
     if not os.path.exists(data_path):

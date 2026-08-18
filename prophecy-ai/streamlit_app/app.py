@@ -13,7 +13,7 @@ from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-st.set_page_config(page_title="Prophecy AI", page_icon="🏠", layout="wide")
+st.set_page_config(page_title="EstatePredict", page_icon="🏠", layout="wide")
 # Initialize saved properties
 SAVED_FILE = "saved_properties.pkl"
 
@@ -90,7 +90,7 @@ def generate_pdf(area, prop_type, beds, baths, sqft, floor,
 
     story = []
 
-    story.append(Paragraph("Prophecy AI", title_style))
+    story.append(Paragraph("EstatePredict", title_style))
     story.append(Paragraph("Professional Property Valuation Report", styles["Heading2"]))
     story.append(Spacer(1, 20))
 
@@ -125,7 +125,7 @@ def generate_pdf(area, prop_type, beds, baths, sqft, floor,
             "<b>AI Model Insights</b><br/>"
             "• Fair price generated using XGBoost.<br/>"
             "• Rent demand estimated using LSTM.<br/>"
-            "• This report is generated automatically by Prophecy AI.",
+            "• This report is generated automatically by EstatePredict.",
             styles["BodyText"],
         )
     )
@@ -186,7 +186,7 @@ def demand_badge(val):
     else:
         return f'<span style="background:rgba(239,68,68,.2); color:#ef4444; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600">Low</span>'
 
-st.sidebar.markdown("<h1 style='text-align:center; background:linear-gradient(135deg,#6366f1,#8b5cf6); -webkit-background-clip:text; -webkit-text-fill-color:transparent'>Prophecy AI</h1>", unsafe_allow_html=True)
+st.sidebar.markdown("<h1 style='text-align:center; background:linear-gradient(135deg,#6366f1,#8b5cf6); -webkit-background-clip:text; -webkit-text-fill-color:transparent'>EstatePredict</h1>", unsafe_allow_html=True)
 st.sidebar.markdown("<p style='text-align:center; color:#94a3b8; font-size:12px'>MSc Data Science Project</p>", unsafe_allow_html=True)
 if "nav_page" not in st.session_state:
         st.session_state.nav_page = "🏠 Dashboard"

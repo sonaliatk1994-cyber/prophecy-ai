@@ -1,4 +1,4 @@
-# Prophecy AI - Real Estate Intelligence Platform
+# EstatePredict - Real Estate Intelligence Platform
 
 > MSc Data Science Project | Dubai Real Estate Demand Prediction using LSTM + XGBoost
 
@@ -90,7 +90,7 @@ docker-compose up streamlit
 
 Navigate to: **http://localhost:8501**
 
-You should see the Prophecy AI dashboard with:
+You should see the EstatePredict dashboard with:
 - Live property listings
 - AI prediction panel
 - Market analytics
@@ -252,7 +252,7 @@ Render offers free web services with 512MB RAM (enough for Streamlit).
 1. **Install GCloud CLI**: [https://cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install)
 2. **Create Project**:
    ```bash
-   gcloud projects create prophecy-ai --name="Prophecy AI"
+   gcloud projects create prophecy-ai --name="EstatePredict"
    gcloud config set project prophecy-ai
    ```
 3. **Enable APIs**:
