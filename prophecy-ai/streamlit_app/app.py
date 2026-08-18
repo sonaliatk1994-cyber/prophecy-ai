@@ -224,7 +224,7 @@ lstm_models = load_lstm_models()
 xgb_model, xgb_features = load_xgb_model()
 
 if page == "🏠 Dashboard":
-    st.markdown("<h2 style='color:white;'>Welcome back, Sarah 👋</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white;'>Welcome back, Nikhil 👋</h2>", unsafe_allow_html=True)
     st.markdown("<p style='color:#94a3b8'>Here is your market snapshot for today.</p>", unsafe_allow_html=True)
     cols = st.columns(4)
     metrics = [
@@ -544,8 +544,8 @@ elif page == "⚙️ Settings":
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("<div class='metric-card'><h4 style='color:#f8fafc;'>Profile</h4>", unsafe_allow_html=True)
-        st.text_input("Full Name", "Sarah Al-Rashid")
-        st.text_input("Email", "sarah@realestate.ae")
+        st.text_input("Full Name", "Nikhil")
+        st.text_input("Email", "Nikhil@realestate.ae")
         st.text_input("Phone", "+971 50 123 4567")
         st.button("Save Changes", use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
