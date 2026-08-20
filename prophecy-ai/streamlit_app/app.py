@@ -346,6 +346,10 @@ elif page == "🔍 Property Search":
                     "Size": row["sqft"],
                     "Price": row["sale_price_aed"]
                 })
+
+                with open(SAVED_FILE, "wb") as f:
+                        pickle.dump(st.session_state.saved_properties, f)
+
                 st.success("Property saved!")
 elif page == "🧠 AI Prediction":
     st.markdown("<h2 style='color:white;'>🧠 AI Price Prediction</h2>", unsafe_allow_html=True)
