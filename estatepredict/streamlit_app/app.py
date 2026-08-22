@@ -26,7 +26,7 @@ if "saved_properties" not in st.session_state:
 def load_css():
     st.markdown("""
     <style>
-    .main { background-color: #0f172a; color: #f8fafc; }
+    [data-testid="stAppViewContainer"]{ background-color: #0f172a; color: #f8fafc; }
     .stButton>button { background: linear-gradient(135deg,#6366f1,#8b5cf6); color: white; border: none; border-radius: 10px; padding: 10px 24px; font-weight: 600; }
     .stButton>button:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(99,102,241,.3); }
     .stDownloadButton>button {
@@ -501,7 +501,7 @@ elif page == "📊 Analytics":
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("<div class='metric-card'><h4 style='color:#f8fafc;'>Rent Price Trends (6 Months)</h4></div>", unsafe_allow_html=True)
-        months = pd.date_range(end=datetime.now(), periods=6, freq='M')
+        months = pd.date_range(end=datetime.now(), periods=6, freq='ME')
         rents = [72, 75, 78, 82, 85, 88]
         st.line_chart(pd.DataFrame({"Month": months, "Avg Rent": rents}).set_index("Month"), color="#6366f1")
         st.markdown("</div>", unsafe_allow_html=True)
