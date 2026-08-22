@@ -501,7 +501,7 @@ elif page == "📊 Analytics":
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("<div class='metric-card'><h4 style='color:#f8fafc;'>Rent Price Trends (6 Months)</h4></div>", unsafe_allow_html=True)
-        months = pd.date_range(end=datetime.now(), periods=6, freq='ME')
+        months = pd.date_range(end=datetime.now(), periods=6, freq='M')
         rents = [72, 75, 78, 82, 85, 88]
         st.line_chart(pd.DataFrame({"Month": months, "Avg Rent": rents}).set_index("Month"), color="#6366f1")
         st.markdown("</div>", unsafe_allow_html=True)
