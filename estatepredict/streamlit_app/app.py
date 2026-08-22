@@ -151,7 +151,7 @@ def load_xgb_model():
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data/sample_properties.csv")
+    df = pd.read_csv("estatepredict/data/sample_properties.csv")
     df['date'] = pd.to_datetime(df['listing_date'])
     return df
 
