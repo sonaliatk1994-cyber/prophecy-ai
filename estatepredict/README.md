@@ -47,8 +47,8 @@ Skip to [Free Cloud Deployment](#free-cloud-deployment) section below.
 ### Step 1: Clone / Download Project
 
 ```bash
-git clone <repo-url> prophecy-ai
-cd prophecy-ai
+git clone <repo-url> estatepredict
+cd estatepredict
 ```
 
 Or extract the ZIP file and `cd` into the folder.
@@ -151,7 +151,7 @@ Render offers free web services with 512MB RAM (enough for Streamlit).
    git add .
    git commit -m "initial commit"
    git branch -M main
-   git remote add origin https://github.com/YOUR_USERNAME/prophecy-ai.git
+   git remote add origin https://github.com/YOUR_USERNAME/estatepredict.git
    git push -u origin main
    ```
 
@@ -163,7 +163,7 @@ Render offers free web services with 512MB RAM (enough for Streamlit).
    - Click "New +" → "Web Service"
    - Connect your GitHub repo
    - Settings:
-     - **Name:** `prophecy-ai`
+     - **Name:** `estatepredict`
      - **Runtime:** `Python 3`
      - **Build Command:** `pip install -r streamlit_app/requirements.txt && python train_local.py`
      - **Start Command:** `streamlit run streamlit_app/app.py --server.port=$PORT --server.address=0.0.0.0`
@@ -172,7 +172,7 @@ Render offers free web services with 512MB RAM (enough for Streamlit).
 
 4. **Wait for Build** (~5-10 minutes)
    - Render will install deps, train models, and start the app
-   - URL will be: `https://prophecy-ai.onrender.com`
+   - URL will be: `https://estatepredict.onrender.com`
 
 5. **Validation**
    - Open the URL
@@ -209,7 +209,7 @@ Render offers free web services with 512MB RAM (enough for Streamlit).
 1. **Create AWS Account**: [https://aws.amazon.com/free](https://aws.amazon.com/free)
 2. **Launch EC2 Instance**:
    - Search "EC2" → Launch Instance
-   - Name: `prophecy-ai`
+   - Name: `estatepredict`
    - AMI: Ubuntu Server 22.04 LTS (Free tier eligible)
    - Instance type: `t2.micro` (Free tier)
    - Key pair: Create new (download .pem file)
@@ -227,8 +227,8 @@ Render offers free web services with 512MB RAM (enough for Streamlit).
    ```bash
    sudo apt update
    sudo apt install -y python3-pip python3-venv git
-   git clone https://github.com/YOUR_USERNAME/prophecy-ai.git
-   cd prophecy-ai
+   git clone https://github.com/YOUR_USERNAME/estatepredict.git
+   cd estatepredict
    python3 -m venv venv
    source venv/bin/activate
    pip install -r streamlit_app/requirements.txt
@@ -252,8 +252,8 @@ Render offers free web services with 512MB RAM (enough for Streamlit).
 1. **Install GCloud CLI**: [https://cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install)
 2. **Create Project**:
    ```bash
-   gcloud projects create prophecy-ai --name="EstatePredict"
-   gcloud config set project prophecy-ai
+   gcloud projects create estatepredict-ai --name="EstatePredict"
+   gcloud config set project estatepredict-ai
    ```
 3. **Enable APIs**:
    ```bash
@@ -261,11 +261,11 @@ Render offers free web services with 512MB RAM (enough for Streamlit).
    ```
 4. **Submit Build**:
    ```bash
-   gcloud builds submit --tag gcr.io/prophecy-ai/streamlit-app ./streamlit_app
+   gcloud builds submit --tag gcr.io/estatepredict-ai/streamlit-app ./streamlit_app
    ```
 5. **Deploy**:
    ```bash
-   gcloud run deploy prophecy-ai      --image gcr.io/prophecy-ai/streamlit-app      --platform managed      --region us-central1      --allow-unauthenticated      --port 8501
+   gcloud run deploy estatepredict-ai      --image gcr.io/estatepredict-ai/streamlit-app      --platform managed      --region us-central1      --allow-unauthenticated      --port 8501
    ```
 6. **Get URL** from output and open in browser
 
@@ -309,7 +309,7 @@ After deployment, verify these features:
 ## Project Structure
 
 ```
-prophecy-ai/
+estatepredict/
 ├── docker-compose.yml          # Orchestrates all services
 ├── train_local.py              # Local model training script
 ├── .env.example                # Environment variables template

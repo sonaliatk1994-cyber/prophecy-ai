@@ -8,7 +8,7 @@ KAFKA_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 
 def create_spark_session():
     spark = SparkSession.builder \
-        .appName("ProphecyAI-Processor") \
+        .appName("EstatePredict-Processor") \
         .master(os.getenv("SPARK_MASTER_URL", "local[*]")) \
         .config("spark.sql.streaming.checkpointLocation", "/tmp/checkpoint") \
         .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0") \
